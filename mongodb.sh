@@ -11,8 +11,7 @@ LOGFILE="/tmp/$0-$TIMESTAMP.log"
 
 echo "script started executing at $TIMESTAMP"   &>> $LOGFILE
 VALIDATE(){
-
-  if [ $1 ne 0 ]
+if [ $1 -ne 0 ]
   then
     echo -e "$2 .....$R FAILED $N"
     exit 1
@@ -29,7 +28,7 @@ else
   echo "you are root user"
 fi
 
- cp mongo.repo/etc/yum.repos.d/mongo.repo      &>> $LOGFILE
+ cp mongo.repo/etc/yum.repos.d/     &>> $LOGFILE
 
  VALIDATE $? "copied mongoDB Repo"
 
