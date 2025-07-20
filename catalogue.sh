@@ -59,7 +59,7 @@ systemctl enable catalogue  &>> $LOGFILE
 VALIDATE $? "enable catalogue "
 systemctl start catalogue  &>> $LOGFILE
 VALIDATE $? "start catalogue "
-cp /home/centos/roboshop /mongo.repo/etc/yum.repos.d/mongo.repo  &>> $LOGFILE
+cp /home/centos/roboshop/mongo.repo /etc/yum.repos.d/mongo.repo  &>> $LOGFILE
 VALIDATE $? "copying mongodb repo "
 dnf install mongodb-org-shell -y  &>> $LOGFILE
 VALIDATE $? "installing mongodb client "
