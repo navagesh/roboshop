@@ -28,7 +28,7 @@ else
   echo "you are root user"
 fi
 
- cp mongo.repo/etc/yum.repos.d/     &>> $LOGFILE
+ cp mongo.repo/etc/yum.repos.d/mongo.repo &>> $LOGFILE
 
  VALIDATE $? "copied mongoDB Repo"
 
