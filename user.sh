@@ -55,7 +55,7 @@ VALIDATE $? "unzipping users"
 npm install  &>> $LOGFILE
 VALIDATE $? "installing dependencies"
 
-cp /home/centos/roboshop/user.service /etc/systemd/system/user.service &>> $LOGFILE
+cp /home/ec2-user/roboshop/user.service /etc/systemd/system/user.service &>> $LOGFILE
 VALIDATE $? "copying user files"
 systemctl daemon-reload  &>> $LOGFILE
 VALIDATE $? "catalogue daemon reload"
