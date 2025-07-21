@@ -1,196 +1,80 @@
 #!/bin/bash
 
-ID=$(id -u)
+START_TIME=$(date +%s)
+USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-MONGDB_HOST=mongodb.navagesh.store
+LOGS_FOLDER="/var/log/roboshop-logs"
+SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
+LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+SCRIPT_DIR=$PWD
 
-TIMESTAMP=$(date +%F-%H-%M-%S)
-LOGFILE="/tmp/$0-$TIMESTAMP.log"
+mkdir -p $LOGS_FOLDER
+echo "Script started executing at: $(date)" | tee -a $LOG_FILE
 
-echo "script stareted executing at $TIMESTAMP" &>> $LOGFILE
+# check the user has root priveleges or not
+if [ $USERID -ne 0 ]
+then
+    echo -e "$R ERROR:: Please run this script with root access $N" | tee -a $LOG_FILE
+    exit 1 #give other than 0 upto 127
+else
+    echo "You are running with root access" | tee -a $LOG_FILE
+fi
 
+# validate functions takes input as exit status, what command they tried to install
 VALIDATE(){
-    if [ $1 -ne 0 ]
+    if [ $1 -eq 0 ]
     then
-        echo -e "$2 ... $R FAILED $N"
-        exit 1
+        echo -e "$2 is ... $G SUCCESS $N" | tee -a $LOG_FILE
     else
-        echo -e "$2 ... $G SUCCESS $N"
+        echo -e "$2 is ... $R FAILURE $N" | tee -a $LOG_FILE
+        exit 1
     fi
 }
 
-if [ $ID -ne 0 ]
-then
-    echo -e "$R ERROR:: Please run this script with root access $N"
-    exit 1 # you can give other than 0
-else
-    echo "You are root user"
-fi # fi means reverse of if, indicating condition end
+dnf module disable nodejs -y &>>$LOG_FILE
+VALIDATE $? "Disabling default nodejs"
 
-dnf module disable nodejs -y &>> $LOGFILE
+dnf module enable nodejs:20 -y &>>$LOG_FILE
+VALIDATE $? "Enabling nodejs:20"
 
-VALIDATE $? "Disabling current NodeJS"
+dnf install nodejs -y &>>$LOG_FILE
+VALIDATE $? "Installing nodejs:20"
 
-dnf module enable nodejs:18 -y  &>> $LOGFILE
-
-VALIDATE $? "Enabling NodeJS:18"
-
-dnf install nodejs -y  &>> $LOGFILE
-
-VALIDATE $? "Installing NodeJS:18"
-
-id roboshop #if roboshop user does not exist, then it is failure
+id roboshop
 if [ $? -ne 0 ]
 then
-    useradd roboshop
-    VALIDATE $? "roboshop user creation"
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+    VALIDATE $? "Creating roboshop system user"
 else
-    echo -e "roboshop user already exist $Y SKIPPING $N"
+    echo -e "System user roboshop already created ... $Y SKIPPING $N"
 fi
 
 mkdir -p /app
+VALIDATE $? "Creating app directory"
 
-VALIDATE $? "creating app directory"
+curl -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip &>>$LOG_FILE
+VALIDATE $? "Downloading user"
 
-curl -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip  &>> $LOGFILE
-
-VALIDATE $? "Downloading user application"
-
+rm -rf /app/*
 cd /app
-
-unzip -o /tmp/user.zip  &>> $LOGFILE
-
+unzip /tmp/user.zip &>>$LOG_FILE
 VALIDATE $? "unzipping user"
 
-npm install  &>> $LOGFILE
+npm install &>>$LOG_FILE
+VALIDATE $? "Installing Dependencies"
 
-VALIDATE $? "Installing dependencies"
+cp $SCRIPT_DIR/user.service /etc/systemd/system/user.service
+VALIDATE $? "Copying user service"
 
-cp /home/ec2-user/roboshop/user.service /etc/systemd/system/user.service
-
-VALIDATE $? "Copying user service file"
-
-systemctl daemon-reload &>> $LOGFILE
-
-VALIDATE $? "user daemon reload"
-
-systemctl enable user &>> $LOGFILE
-
-VALIDATE $? "Enable user"
-
-systemctl start user &>> $LOGFILE
-
+systemctl daemon-reload &>>$LOG_FILE
+systemctl enable user  &>>$LOG_FILE
+systemctl start user
 VALIDATE $? "Starting user"
 
-cp /home/ec2-user/roboshop/mongo.repo /etc/yum.repos.d/mongodb-org-8.0.repo
+END_TIME=$(date +%s)
+TOTAL_TIME=$(( $END_TIME - $START_TIME ))
 
-VALIDATE $? "copying mongodb repo"
-
-dnf install mongodb-org-shell -y &>> $LOGFILE
-
-VALIDATE $? "Installing MongoDB client"
-
-mongo --host $MONGDB_HOST </app/schema/user.js &>> $LOGFILE
-
-VALIDATE $? "Loading user data into MongoDB"
-#!/bin/bash
-
-ID=$(id -u)
-R="\e[31m"
-G="\e[32m"
-Y="\e[33m"
-N="\e[0m"
-MONGDB_HOST=mongodb.daws76s.online
-
-TIMESTAMP=$(date +%F-%H-%M-%S)
-LOGFILE="/tmp/$0-$TIMESTAMP.log"
-
-echo "script stareted executing at $TIMESTAMP" &>> $LOGFILE
-
-VALIDATE(){
-    if [ $1 -ne 0 ]
-    then
-        echo -e "$2 ... $R FAILED $N"
-        exit 1
-    else
-        echo -e "$2 ... $G SUCCESS $N"
-    fi
-}
-
-if [ $ID -ne 0 ]
-then
-    echo -e "$R ERROR:: Please run this script with root access $N"
-    exit 1 # you can give other than 0
-else
-    echo "You are root user"
-fi # fi means reverse of if, indicating condition end
-
-dnf module disable nodejs -y &>> $LOGFILE
-
-VALIDATE $? "Disabling current NodeJS"
-
-dnf module enable nodejs:18 -y  &>> $LOGFILE
-
-VALIDATE $? "Enabling NodeJS:18"
-
-dnf install nodejs -y  &>> $LOGFILE
-
-VALIDATE $? "Installing NodeJS:18"
-
-id roboshop #if roboshop user does not exist, then it is failure
-if [ $? -ne 0 ]
-then
-    useradd roboshop
-    VALIDATE $? "roboshop user creation"
-else
-    echo -e "roboshop user already exist $Y SKIPPING $N"
-fi
-
-mkdir -p /app
-
-VALIDATE $? "creating app directory"
-
-curl -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip  &>> $LOGFILE
-
-VALIDATE $? "Downloading user application"
-
-cd /app
-
-unzip -o /tmp/user.zip  &>> $LOGFILE
-
-VALIDATE $? "unzipping user"
-
-npm install  &>> $LOGFILE
-
-VALIDATE $? "Installing dependencies"
-
-cp /home/centos/roboshop-shell/user.service /etc/systemd/system/user.service
-
-VALIDATE $? "Copying user service file"
-
-systemctl daemon-reload &>> $LOGFILE
-
-VALIDATE $? "user daemon reload"
-
-systemctl enable user &>> $LOGFILE
-
-VALIDATE $? "Enable user"
-
-systemctl start user &>> $LOGFILE
-
-VALIDATE $? "Starting user"
-
-cp /home/centos/roboshop-shell/mongo.repo /etc/yum.repos.d/mongo.repo
-
-VALIDATE $? "copying mongodb repo"
-
-dnf install mongodb-org-shell -y &>> $LOGFILE
-
-VALIDATE $? "Installing MongoDB client"
-
-mongo --host $MONGDB_HOST </app/schema/user.js &>> $LOGFILE
-
-VALIDATE $? "Loading user data into MongoDB"
+echo -e "Script exection completed successfully, $Y time taken: $TOTAL_TIME seconds $N" | tee -a $LOG_FILE
