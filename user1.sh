@@ -69,7 +69,7 @@ npm install  &>> $LOGFILE
 
 VALIDATE $? "Installing dependencies"
 
-cp /home/ec2-user/roboshop-shell/user.service /etc/systemd/system/user.service
+cp /home/ec2-user/roboshop/user.service /etc/systemd/system/user.service
 
 VALIDATE $? "Copying user service file"
 
