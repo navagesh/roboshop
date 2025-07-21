@@ -9,7 +9,6 @@ N="\e[0m"
 TIMESTAMP=$(date +%F-%H-%M-%S)
 LOGFILE="/tmp/$0-$TIMESTAMP.log"
 exec &>$LOGFILE
-
 echo "script stareted executing at $TIMESTAMP" &>> $LOGFILE
 
 VALIDATE(){
@@ -29,7 +28,6 @@ then
 else
     echo "You are root user"
 fi # fi means reverse of if, indicating condition end
-
 
 dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y
 
