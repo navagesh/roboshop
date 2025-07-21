@@ -68,6 +68,6 @@ VALIDATE $? "copying mongodb repo "
 dnf install mongodb-org -y  &>> $LOGFILE
 VALIDATE $? "installing mongodb client "
 
-mongo --host mongodb.navagesh.store </app/schema/user.js  &>> $LOGFILE
+mongo --host mongo.navagesh.store </app/schema/user.js  &>> $LOGFILE
 
 VALIDATE $? "loading user data into mongodb "
