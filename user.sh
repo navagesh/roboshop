@@ -65,9 +65,9 @@ systemctl start user  &>> $LOGFILE
 VALIDATE $? "start user "
 cp /home/ec2-user/roboshop/mongo.repo /etc/yum.repos.d/mongo.repo  &>> $LOGFILE
 VALIDATE $? "copying mongodb repo "
-dnf install mongodb-org -y  &>> $LOGFILE
+dnf install mongodb-org-shell -y  &>> $LOGFILE
 VALIDATE $? "installing mongodb client "
 
-mongo --host mongo.navagesh.store </app/schema/user.js  &>> $LOGFILE
+mongo --host mongodb.navagesh.store </app/schema/user.js  &>> $LOGFILE
 
 VALIDATE $? "loading user data into mongodb "
