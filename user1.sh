@@ -85,7 +85,7 @@ systemctl start user &>> $LOGFILE
 
 VALIDATE $? "Starting user"
 
-cp /home/ec2-user/roboshop/mongo.repo /etc/yum.repos.d/mongo.repo
+cp /home/ec2-user/roboshop/mongo.repo /etc/yum.repos.d/mongodb-org-8.0.repo
 
 VALIDATE $? "copying mongodb repo"
 
