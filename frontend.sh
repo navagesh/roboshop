@@ -60,7 +60,7 @@ VALIDATE $? "unzipping frontend"
 rm -rf /etc/nginx/nginx.conf &>>$LOG_FILE
 VALIDATE $? "Remove default nginx conf"
 
-cp $/home/ec2-user/roboshop/nginx.conf/ etc/nginx/nginx.conf
+cp home/ec2-user/roboshop/nginx.conf/ etc/nginx/nginx.conf
 VALIDATE $? "Copying nginx.conf"
 
 systemctl restart nginx
