@@ -1,6 +1,6 @@
 #!/bin/#!/usr/bin/env bash
 AMI=ami-0b4f379183e5706b9
-SG-ID=sg-02691376fe9620bc7
+SG_ID=sg-02691376fe9620bc7
 INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "dispatch" "frontend")
 for i in "${INSTANCE[@]}"
 do
