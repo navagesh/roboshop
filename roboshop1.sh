@@ -8,9 +8,9 @@ do
 
   if [ $i == "mongodb"] || [ $i == "mysql"] || [ $i == "shipping" ]
   then
-    INSTANCE_TYPE="t3.small"
+      INSTANCE_TYPE="t3.small"
   else
-  INSTANCE_TYPE="t2.micro"
+      INSTANCE_TYPE="t2.micro"
   fi
-  aws ec2 run-instances --image-id ami-0b4f379183e5706b9 --instance-type t2.micro --security-group-ids sg-02691376fe9620bc7
+  aws ec2 run-instances --image-id ami-0b4f379183e5706b9 --instance-type $INSTANCE_TYPE --security-group-ids sg-02691376fe9620bc7
 done
