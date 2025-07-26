@@ -12,5 +12,5 @@ do
   else
       INSTANCE_TYPE="t2.micro"
   fi
-  IP_ADDRESS=aws ec2 run-instances --image-id ami-0b4f379183e5706b9 --instance-type $INSTANCE_TYPE --security-group-ids sg-02691376fe9620bc7
+  IP_ADDRESS=$(aws ec2 run-instances --image-id ami-0b4f379183e5706b9 --instance-type $INSTANCE_TYPE --security-group-ids sg-02691376fe9620bc7)
 done
