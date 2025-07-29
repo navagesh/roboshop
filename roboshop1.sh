@@ -3,7 +3,7 @@ AMI=ami-0b4f379183e5706b9
 SG_ID=sg-02691376fe9620bc7
 INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "dispatch" "web")
 ZONE_ID=Z024413530CGQ4R1R1UY9 # replace your zone ID
-DOMAIN_NAME="navages.store"
+DOMAIN_NAME="navagesh.store"
 
 for i in "${INSTANCES[@]}"
 do
